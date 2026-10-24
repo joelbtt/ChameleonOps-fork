@@ -1,0 +1,13 @@
+
+1. Lo que se realizó en el entorno local (openSUSE VM):
+ *Automatización con Ansible:** Creación y estructuración de los roles para la instalación completa de la infraestructura LAMP.
+ *Configuración de Red:** Reglas de firewall aplicadas para habilitar el tráfico web por los puertos correspondientes.
+ *Prueba de Despliegue:** Creación del archivo `index.php` en `/srv/www/htdocs/` para verificar la comunicación entre Apache y PHP mediante `phpinfo()`.
+ *Garantía de Idempotencia:** Ejecución y validación del playbook con resultado limpio (`changed=0`), permitiendo reejecutar el despliegue sin romper configuraciones existentes.
+
+2. Lo que se está añadiendo al repositorio:**
+ *Rol Apache:** Instalación, servicio activo y habilitado en arranque + apertura de firewall.
+ *Rol PHP 8:** Instalación del intérprete e integración nativa con Apache.
+ *Rol MariaDB:** Despliegue del motor de base de datos y servicio habilitado.
+ *Rol phpMyAdmin:** Interfaz web lista para la gestión de MariaDB desde el navegador.
+ *Archivos y tareas:** Estructura completa en `roles/` dentro del proyecto.

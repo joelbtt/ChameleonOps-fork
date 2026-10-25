@@ -1,4 +1,11 @@
 ---
-- name: Placeholder del rol ftp
-  ansible.builtin.debug:
-    msg: 'PENDIENTE: VM03 debe sustituir esta tarea por la automatizacion real de ftp'
+- name: Instalar vsftpd
+  zypper:
+    name: vsftpd
+    state: present
+
+- name: Iniciar y habilitar servicio FTP
+  service:
+    name: vsftpd
+    state: started
+    enabled: true

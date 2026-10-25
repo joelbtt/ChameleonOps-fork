@@ -1,4 +1,31 @@
 ---
-- name: Placeholder del rol samba
-  ansible.builtin.debug:
-    msg: 'PENDIENTE: VM03 debe sustituir esta tarea por la automatizacion real de samba'
+- name: Instalar Samba
+  zypper:
+    name: samba
+    state: present
+
+- name: Crear directorio compartido
+  file:
+    path: /srv/samba/compartido
+    state: directory
+    mode: '0770'
+
+- name: Crear plantilla de configuracion smb.conf
+  template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+  notify: Reiniciar Samba
+
+- name: Permitir servicio Samba en el Firewall
+  firewalld:
+    service: samba
+    permanent: true
+    state: enabled
+    immediate: true
+  ignore_errors: true
+
+- name: Iniciar y habilitar servicio Samba
+  service:
+    name: smb
+    state: started
+    enabled: true

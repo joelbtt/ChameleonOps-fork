@@ -1,4 +1,13 @@
 ---
-- name: Placeholder del rol mariadb
-  ansible.builtin.debug:
-    msg: 'PENDIENTE: VM02 debe sustituir esta tarea por la automatizacion real de mariadb'
+- name: Instalar servidor y cliente MariaDB
+  zypper:
+    name:
+      - mariadb
+      - mariadb-client
+    state: present
+
+- name: Iniciar y habilitar MariaDB
+  service:
+    name: mariadb
+    state: started
+    enabled: true

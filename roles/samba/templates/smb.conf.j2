@@ -1,0 +1,11 @@
+[global]
+   workgroup = WORKGROUP
+   security = user
+
+[compartido]
+   path = /srv/samba/compartido
+   browseable = yes
+   read only = no
+   guest ok = no
+   create mask = 0660
+   directory mask = 0770

@@ -1,2 +1,5 @@
 ---
-[]
+- name: Reiniciar PostgreSQL
+  service:
+    name: postgresql
+    state: restarted

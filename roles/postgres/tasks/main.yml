@@ -1,4 +1,42 @@
 ---
-- name: Placeholder del rol postgres
-  ansible.builtin.debug:
-    msg: 'PENDIENTE: VM04 debe sustituir esta tarea por la automatizacion real de postgres'
+- name: Instalar PostgreSQL y librerias
+  zypper:
+    name:
+      - postgresql-server
+      - postgresql-contrib
+      - php8-pgsql
+      - python3-psycopg2
+    state: present
+
+- name: Inicializar base de datos si no existe
+  command: postgresql-setup --initdb
+  args:
+    creates: /var/lib/pgsql/data/postgresql.conf
+  ignore_errors: true
+
+- name: Permitir conexiones desde cualquier interfaz en postgresql.conf
+  lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: "^#?listen_addresses\\s*=.*"
+    line: "listen_addresses = '*'"
+  notify: Reiniciar PostgreSQL
+
+- name: Configurar permisos de acceso remoto en pg_hba.conf
+  lineinfile:
+    path: /var/lib/pgsql/data/pg_hba.conf
+    line: "host    all             all             0.0.0.0/0               scram-sha-256"
+  notify: Reiniciar PostgreSQL
+
+- name: Permitir puerto de PostgreSQL en el Firewall
+  firewalld:
+    port: 5432/tcp
+    permanent: true
+    state: enabled
+    immediate: true
+  ignore_errors: true
+
+- name: Iniciar y habilitar PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: true

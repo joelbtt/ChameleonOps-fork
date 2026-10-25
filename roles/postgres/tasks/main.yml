@@ -1,5 +1,5 @@
 ---
-- name: Instalar PostgreSQL y librerias
+- name: Instalar PostgreSQL, librerias y python-psycopg2
   zypper:
     name:
       - postgresql-server
@@ -40,3 +40,19 @@
     name: postgresql
     state: started
     enabled: true
+
+- name: Crear base de datos de aplicacion en PostgreSQL
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: app_db
+    state: present
+
+- name: Crear usuario de aplicacion en PostgreSQL
+  become: true
+  become_user: postgres
+  postgresql_user:
+    db: app_db
+    name: joel12
+    password: "mundolibre"
+    state: present

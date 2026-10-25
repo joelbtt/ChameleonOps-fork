@@ -4,10 +4,17 @@
     name: samba
     state: present
 
+- name: Crear usuario de sistema para Samba
+  user:
+    name: usuario_samba
+    state: present
+
 - name: Crear directorio compartido
   file:
     path: /srv/samba/compartido
     state: directory
+    owner: usuario_samba
+    group: usuario_samba
     mode: '0770'
 
 - name: Crear plantilla de configuracion smb.conf

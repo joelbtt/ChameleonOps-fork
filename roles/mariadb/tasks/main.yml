@@ -1,9 +1,10 @@
 ---
-- name: Instalar MariaDB
+- name: Instalar MariaDB, cliente y paquete de Python para MySQL
   zypper:
     name:
       - mariadb
       - mariadb-client
+      - python3-mysqlclient
     state: present
 
 - name: Iniciar y habilitar servicio MariaDB
@@ -12,10 +13,18 @@
     state: started
     enabled: true
 
-- name: Crear base de datos para MariaDB
-  command: mariadb -e "CREATE DATABASE IF NOT EXISTS app_mariadb;"
-  failed_when: false
+- name: Crear base de datos de la aplicacion
+  community.mysql.mysql_db:
+    name: "app_mariadb"
+    state: present
+    login_unix_socket: /var/run/mysql/mysql.sock
 
-- name: Crear usuario joel1234 con contrasena mundolibre
-  command: mariadb -e "GRANT ALL PRIVILEGES ON app_mariadb.* TO 'joel1234'@'%' IDENTIFIED BY 'mundolibre'; FLUSH PRIVILEGES;"
-  failed_when: false
+- name: Crear usuario joel1234 con contrasena mundolibre restringido a localhost
+  community.mysql.mysql_user:
+    name: "joel1234"
+    password: "mundolibre"
+    priv: "app_mariadb.*:ALL"
+    host: "localhost"
+    state: present
+    login_unix_socket: /var/run/mysql/mysql.sock
+  no_log: true

@@ -1,15 +1,44 @@
 ---
-- name: Instalar Apache, PHP y phpMyAdmin
+- name: Instalar Apache, PHP y conectores necesarios (MySQL y PostgreSQL)
   zypper:
     name:
       - apache2
+      - apache2-mod_php8
       - php8
       - php8-mysql
+      - php8-pgsql
       - phpMyAdmin
     state: present
 
-- name: Iniciar y habilitar Apache
+- name: Habilitar el modulo de PHP 8 en Apache
+  command: a2enmod php8
+  register: php8_enable
+  changed_when: "'already present' not in php8_enable.stdout"
+  notify: Reiniciar Apache
+
+- name: Asegurar que el servicio Apache2 esta iniciado y habilitado
   service:
     name: apache2
     state: started
     enabled: true
+
+- name: Abrir puerto HTTP en el firewall
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    state: enabled
+    immediate: true
+  ignore_errors: true
+
+- name: Crear pagina de comprobacion de salud de la aplicacion
+  copy:
+    dest: /srv/www/htdocs/health.php
+    mode: '0644'
+    content: |
+      <?php
+      header('Content-Type: text/plain');
+      echo "Status: OK\n";
+      echo "PHP Version: " . phpversion() . "\n";
+      echo "MySQLi Extension: " . (extension_loaded('mysqli') ? 'Loaded' : 'Missing') . "\n";
+      echo "PGSQL Extension: " . (extension_loaded('pgsql') ? 'Loaded' : 'Missing') . "\n";
+      ?>

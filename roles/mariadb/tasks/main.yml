@@ -1,30 +1,20 @@
----
-- name: Instalar MariaDB, cliente y paquete de Python para MySQL
-  zypper:
-    name:
-      - mariadb
-      - mariadb-client
-      - python3-mysqlclient
-    state: present
-
-- name: Iniciar y habilitar servicio MariaDB
-  service:
-    name: mariadb
-    state: started
-    enabled: true
-
 - name: Crear base de datos de la aplicacion
   community.mysql.mysql_db:
-    name: "app_mariadb"
+    name: "app_db"
     state: present
+    login_user: root
+    login_password: "mundolibre"
     login_unix_socket: /var/run/mysql/mysql.sock
+  ignore_errors: true
 
-- name: Crear usuario joel1234 con contrasena mundolibre restringido a localhost
+- name: Crear usuario de MariaDB con credenciales de la aplicacion
   community.mysql.mysql_user:
-    name: "joel1234"
+    name: "joel123"
     password: "mundolibre"
-    priv: "app_mariadb.*:ALL"
-    host: "localhost"
+    priv: "*.*:ALL"
+    host: "%"
     state: present
+    login_user: root
+    login_password: "mundolibre"
     login_unix_socket: /var/run/mysql/mysql.sock
-  no_log: true
+  ignore_errors: true

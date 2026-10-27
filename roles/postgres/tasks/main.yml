@@ -44,10 +44,11 @@
 - name: Crear usuario aplicación
   community.postgresql.postgresql_user:
     name: "{{ postgres_app_user }}"
-    password: "{{ vault_postgres_password }}"
+    password: "mundolibre"
     encrypted: true
+  become: yes
   become_user: postgres
-  no_log: true
+  no_log: false
 
 - name: Crear base de datos
   community.postgresql.postgresql_db:
@@ -56,8 +57,9 @@
   become_user: postgres
 
 - name: Abrir puerto PostgreSQL
-  ansible.posix.firewalld:
-    port: 5432/tcp
-    permanent: true
-    state: enabled
-    immediate: true
+  command: firewall-cmd --zone=public --add-port=5432/tcp --permanent
+  failed_when: false
+
+- name: Recargar firewall
+  command: firewall-cmd --reload
+  failed_when: false
